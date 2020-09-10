@@ -1,7 +1,7 @@
 //All Javascript automatically run
 
 //importing react
-import React from "react";
+import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
 
@@ -10,22 +10,31 @@ import axios from "axios";
 import ImageList from "./components/image_list";
 
 //Creating a component
+class App extends Component {
 
-const App = () => {
-  return (
-    <div>
-      <h1>Image List</h1>
-      <ImageList />
-    </div>
-  );
-};
+  constructor(props){
+    super(props)
+
+    this.state = {
+      images: []
+    }
+  }
+  componentWillMount() {
+    axios
+      .get(
+        `https://pixabay.com/api/?key=${process.env.LALLE_KEY}&q=india&image_type=photo&pretty=true`
+      )
+      .then((response) => this.setState({images:response.data.hits}));
+  }
+  render() {
+    return (
+      <div>
+        <ImageList images={this.state.images}/>
+      </div>
+    );
+  }
+}
 //Rendering to the screen
 Meteor.startup(() => {
-  console.log(Meteor.settings)
   ReactDOM.render(<App />, document.querySelector(".container"));
-  axios
-    .get(
-      `https://pixabay.com/api/?key=${process.env.LALLE_KEY}&q=india&image_type=photo&pretty=true`)
-    .then((response) => console.log(response));
-    
 }); //Done to avoid DOM not loaded errors
